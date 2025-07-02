@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lewis Tracker</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -16,7 +16,6 @@
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect } = React;
-        const { Trash2, Download, Baby, Clock, Droplets, Milk } = lucide;
 
         const BabyTracker = () => {
           const [entries, setEntries] = useState([]);
@@ -85,21 +84,6 @@
             }
           };
 
-          const getEntryColor = (type) => {
-            switch(type) {
-              case 'poop': return 'bg-amber-600 hover:bg-amber-700';
-              case 'pee': return 'bg-blue-600 hover:bg-blue-700';
-              case 'feeding': return 'bg-green-600 hover:bg-green-700';
-              default: return 'bg-gray-600 hover:bg-gray-700';
-            }
-          };
-
-          const todayEntries = entries.filter(entry => {
-            const today = new Date().toDateString();
-            const entryDate = new Date(entry.timestamp).toDateString();
-            return today === entryDate;
-          });
-
           const getStats = () => {
             const today = new Date().toDateString();
             const todayEntries = entries.filter(entry => {
@@ -119,140 +103,155 @@
 
           const stats = getStats();
 
-          return React.createElement('div', { className: "min-h-screen bg-gray-900 text-white p-4" },
-            React.createElement('div', { className: "max-w-md mx-auto" },
-              // Header
-              React.createElement('div', { className: "text-center mb-6" },
-                React.createElement('div', { className: "flex items-center justify-center gap-2" },
-                  React.createElement(Baby, { className: "w-8 h-8 text-pink-400" }),
-                  React.createElement('h1', { className: "text-2xl font-bold" }, "Lewis Tracker")
-                )
-              ),
+          return (
+            <div className="min-h-screen bg-gray-900 text-white p-4">
+              <div className="max-w-md mx-auto">
+                {/* Header */}
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-3xl">👶</span>
+                    <h1 className="text-2xl font-bold">Lewis Tracker</h1>
+                  </div>
+                </div>
 
-              // Today's Stats
-              React.createElement('div', { className: "bg-gray-800 rounded-lg p-4 mb-6" },
-                React.createElement('h2', { className: "text-lg font-semibold mb-3 flex items-center gap-2" },
-                  React.createElement(Clock, { className: "w-5 h-5" }),
-                  "Today's Summary"
-                ),
-                React.createElement('div', { className: "grid grid-cols-2 gap-4" },
-                  React.createElement('div', { className: "text-center" },
-                    React.createElement('div', { className: "text-2xl font-bold text-amber-400" }, stats.poops),
-                    React.createElement('div', { className: "text-sm text-gray-400" }, "Poops")
-                  ),
-                  React.createElement('div', { className: "text-center" },
-                    React.createElement('div', { className: "text-2xl font-bold text-blue-400" }, stats.pees),
-                    React.createElement('div', { className: "text-sm text-gray-400" }, "Pees")
-                  ),
-                  React.createElement('div', { className: "text-center" },
-                    React.createElement('div', { className: "text-2xl font-bold text-green-400" }, stats.feedings),
-                    React.createElement('div', { className: "text-sm text-gray-400" }, "Feedings")
-                  ),
-                  React.createElement('div', { className: "text-center" },
-                    React.createElement('div', { className: "text-2xl font-bold text-green-400" }, stats.totalOunces.toFixed(1)),
-                    React.createElement('div', { className: "text-sm text-gray-400" }, "Total oz")
-                  )
-                )
-              ),
+                {/* Today's Stats */}
+                <div className="bg-gray-800 rounded-lg p-4 mb-6">
+                  <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <span>⏰</span>
+                    Today's Summary
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-amber-400">{stats.poops}</div>
+                      <div className="text-sm text-gray-400">Poops</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-400">{stats.pees}</div>
+                      <div className="text-sm text-gray-400">Pees</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">{stats.feedings}</div>
+                      <div className="text-sm text-gray-400">Feedings</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">{stats.totalOunces.toFixed(1)}</div>
+                      <div className="text-sm text-gray-400">Total oz</div>
+                    </div>
+                  </div>
+                </div>
 
-              // Quick Log Buttons
-              React.createElement('div', { className: "mb-6" },
-                React.createElement('h2', { className: "text-lg font-semibold mb-3" }, "Quick Log"),
-                React.createElement('div', { className: "space-y-3" },
-                  // Poop and Pee buttons
-                  React.createElement('div', { className: "grid grid-cols-2 gap-3" },
-                    React.createElement('button', {
-                      onClick: () => addEntry('poop'),
-                      className: "bg-amber-600 hover:bg-amber-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg"
-                    }, "💩 Poop"),
-                    React.createElement('button', {
-                      onClick: () => addEntry('pee'),
-                      className: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg"
-                    }, "💧 Pee")
-                  ),
-                  
-                  // Feeding section
-                  React.createElement('div', { className: "bg-gray-800 rounded-lg p-4" },
-                    React.createElement('div', { className: "flex items-center gap-2 mb-3" },
-                      React.createElement(Milk, { className: "w-5 h-5 text-green-400" }),
-                      React.createElement('span', { className: "font-semibold" }, "Feeding")
-                    ),
-                    React.createElement('div', { className: "flex gap-2" },
-                      React.createElement('input', {
-                        type: "number",
-                        value: feedingAmount,
-                        onChange: (e) => setFeedingAmount(e.target.value),
-                        placeholder: "Ounces",
-                        className: "flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-400 focus:outline-none",
-                        step: "0.5",
-                        min: "0"
-                      }),
-                      React.createElement('button', {
-                        onClick: () => feedingAmount && addEntry('feeding', feedingAmount),
-                        disabled: !feedingAmount,
-                        className: "bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors"
-                      }, "Log")
-                    )
-                  )
-                )
-              ),
+                {/* Quick Log Buttons */}
+                <div className="mb-6">
+                  <h2 className="text-lg font-semibold mb-3">Quick Log</h2>
+                  <div className="space-y-3">
+                    {/* Poop and Pee buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => addEntry('poop')}
+                        className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg"
+                      >
+                        💩 Poop
+                      </button>
+                      <button
+                        onClick={() => addEntry('pee')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg"
+                      >
+                        💧 Pee
+                      </button>
+                    </div>
+                    
+                    {/* Feeding section */}
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-green-400">🍼</span>
+                        <span className="font-semibold">Feeding</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={feedingAmount}
+                          onChange={(e) => setFeedingAmount(e.target.value)}
+                          placeholder="Ounces"
+                          className="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-400 focus:outline-none"
+                          step="0.5"
+                          min="0"
+                        />
+                        <button
+                          onClick={() => feedingAmount && addEntry('feeding', feedingAmount)}
+                          disabled={!feedingAmount}
+                          className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors"
+                        >
+                          Log
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-              // Export Button
-              React.createElement('div', { className: "mb-6" },
-                React.createElement('button', {
-                  onClick: exportToCSV,
-                  className: "w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                },
-                  React.createElement(Download, { className: "w-5 h-5" }),
-                  "Export to CSV (Google Sheets)"
-                )
-              ),
+                {/* Export Button */}
+                <div className="mb-6">
+                  <button
+                    onClick={exportToCSV}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>⬇️</span>
+                    Export to CSV (Google Sheets)
+                  </button>
+                </div>
 
-              // Recent Entries
-              React.createElement('div', null,
-                React.createElement('h2', { className: "text-lg font-semibold mb-3" }, "Recent Entries"),
-                entries.length === 0 
-                  ? React.createElement('div', { className: "text-center text-gray-400 py-8" },
-                      React.createElement(Baby, { className: "w-12 h-12 mx-auto mb-2 opacity-50" }),
-                      React.createElement('p', null, "No entries yet. Start logging!")
-                    )
-                  : React.createElement('div', { className: "space-y-2 max-h-96 overflow-y-auto" },
-                      entries.slice(0, 20).map((entry) =>
-                        React.createElement('div', {
-                          key: entry.id,
-                          className: "bg-gray-800 rounded-lg p-3 flex items-center justify-between"
-                        },
-                          React.createElement('div', { className: "flex items-center gap-3" },
-                            React.createElement('span', { className: "text-2xl" }, getEntryIcon(entry.type)),
-                            React.createElement('div', null,
-                              React.createElement('div', { className: "font-semibold capitalize flex items-center gap-2" },
-                                entry.type,
-                                entry.amount && React.createElement('span', { className: "text-green-400 text-sm" }, `${entry.amount} oz`)
-                              ),
-                              React.createElement('div', { className: "text-sm text-gray-400" }, entry.displayTime)
-                            )
-                          ),
-                          React.createElement('button', {
-                            onClick: () => deleteEntry(entry.id),
-                            className: "text-red-400 hover:text-red-300 p-1 rounded transition-colors"
-                          },
-                            React.createElement(Trash2, { className: "w-4 h-4" })
-                          )
-                        )
-                      )
-                    )
-              ),
+                {/* Recent Entries */}
+                <div>
+                  <h2 className="text-lg font-semibold mb-3">Recent Entries</h2>
+                  {entries.length === 0 ? (
+                    <div className="text-center text-gray-400 py-8">
+                      <div className="text-6xl mb-2 opacity-50">👶</div>
+                      <p>No entries yet. Start logging!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {entries.slice(0, 20).map((entry) => (
+                        <div
+                          key={entry.id}
+                          className="bg-gray-800 rounded-lg p-3 flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">{getEntryIcon(entry.type)}</span>
+                            <div>
+                              <div className="font-semibold capitalize flex items-center gap-2">
+                                {entry.type}
+                                {entry.amount && (
+                                  <span className="text-green-400 text-sm">
+                                    {entry.amount} oz
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm text-gray-400">
+                                {entry.displayTime}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => deleteEntry(entry.id)}
+                            className="text-red-400 hover:text-red-300 p-1 rounded transition-colors text-lg"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-              // Footer
-              React.createElement('div', { className: "mt-8 text-center text-gray-500 text-sm" },
-                React.createElement('p', null, "Data saved locally • Export to import into Google Sheets")
-              )
-            )
+                {/* Footer */}
+                <div className="mt-8 text-center text-gray-500 text-sm">
+                  <p>Data saved locally • Export to import into Google Sheets</p>
+                </div>
+              </div>
+            </div>
           );
         };
 
-        ReactDOM.render(React.createElement(BabyTracker), document.getElementById('root'));
+        ReactDOM.render(<BabyTracker />, document.getElementById('root'));
     </script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </body>
 </html>
