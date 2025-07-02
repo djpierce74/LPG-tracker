@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newborn Activity Tracker</title>
+    <title>Lewis Tracker</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -66,13 +66,14 @@
         .radio-group {
             display: flex;
             flex-wrap: wrap; /* Allow wrapping on small screens */
-            gap: 1rem; /* Space between radio buttons */
+            gap: 0.5rem; /* Reduced gap for mobile friendliness */
             margin-bottom: 1.5rem;
+            justify-content: center; /* Center items for better appearance on wrap */
         }
         .radio-group label {
             display: flex;
             align-items: center;
-            padding: 0.75rem 1.25rem;
+            padding: 0.75rem 0.75rem; /* Reduced horizontal padding for mobile friendliness */
             border: 1px solid #4a5568; /* Darker grey border */
             border-radius: 0.75rem;
             cursor: pointer;
@@ -188,7 +189,7 @@
 </head>
 <body>
     <div class="form-container">
-        <h2 class="text-3xl font-extrabold text-center text-gray-800 mb-8">Newborn Activity Tracker</h2>
+        <h2 class="text-3xl font-extrabold text-center text-gray-800 mb-8">Lewis Tracker</h2>
 
         <form id="activityForm" class="space-y-6">
             <!-- Date and Time -->
@@ -235,165 +236,4 @@
             <!-- Details -->
             <div class="input-group">
                 <label for="activityDetails">Details:</label>
-                <textarea id="activityDetails" name="activityDetails" rows="4" placeholder="e.g., Color and consistency, Wet or soiled, Wake-ups, etc." class="resize-y"></textarea>
-            </div>
-
-            <button type="submit" class="submit-button">Log Activity</button>
-        </form>
-    </div>
-
-    <!-- Message Box for Confirmation/Error -->
-    <div id="messageBox" class="message-box">
-        <p id="messageText" class="text-lg font-semibold"></p>
-        <button onclick="closeMessageBox()">Close</button>
-    </div>
-
-    <script>
-        // REPLACE WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
-        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzySRBH7-SrbdkAlTr-4nAdSABXLG5tNcAdaGxyI1zQqskBqh3hSmZYwnRqdxnRXAhb/exec'; // *** IMPORTANT ***
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set default date to current
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            document.getElementById('activityDate').value = `${year}-${month}-${day}`;
-
-            // Set default time to current in 12-hour format for display
-            let hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('activityTime').value = `${now.getHours().toString().padStart(2, '0')}:${minutes}`;
-            
-            // Get elements for conditional display
-            const activityTypeRadios = document.querySelectorAll('input[name="activityType"]');
-            const formulaMlGroup = document.getElementById('formulaMlGroup');
-            const formulaMlInput = document.getElementById('formulaMl');
-
-            // Function to toggle formula ML input visibility
-            function toggleFormulaMlInput() {
-                if (document.getElementById('typeFormula').checked) {
-                    formulaMlGroup.style.display = 'block';
-                    formulaMlInput.required = true; // Make it required when visible
-                } else {
-                    formulaMlGroup.style.display = 'none';
-                    formulaMlInput.value = ''; // Clear value when hidden
-                    formulaMlInput.required = false; // Not required when hidden
-                }
-            }
-
-            // Add event listeners to activity type radios
-            activityTypeRadios.forEach(radio => {
-                radio.addEventListener('change', toggleFormulaMlInput);
-            });
-
-            // Initial check in case "Formula" is pre-selected (though not by default here)
-            toggleFormulaMlInput();
-
-
-            // Handle form submission
-            const activityForm = document.getElementById('activityForm');
-            activityForm.addEventListener('submit', async function(event) {
-                event.preventDefault(); // Prevent default form submission
-
-                // Get form data
-                const activityDate = document.getElementById('activityDate').value;
-                const activityTime = document.getElementById('activityTime').value; // This will be in 24-hour format
-                const activityType = document.querySelector('input[name="activityType"]:checked');
-                const activityDetails = document.getElementById('activityDetails').value;
-                const formulaMl = document.getElementById('formulaMl').value; // Get formula ML value
-
-                // Basic validation for activity type
-                if (!activityType) {
-                    showMessageBox('Please select an activity type.', 'error');
-                    return;
-                }
-
-                const formData = {
-                    date: activityDate,
-                    time: activityTime,
-                    type: activityType.value,
-                    // Include formulaMl only if it's relevant (i.e., Formula type is selected and value exists)
-                    mlFormula: activityType.value === 'Formula' ? formulaMl : '',
-                    details: activityDetails
-                };
-
-                // Send data to Google Apps Script
-                try {
-                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors', // Required for Google Apps Script web apps
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    // Google Apps Script with `mode: 'no-cors'` always returns an 'opaque' response.
-                    // We can't directly read its content. A successful `fetch` means the request
-                    // was sent. You can confirm data in your Google Sheet.
-                    // Assuming success if fetch doesn't throw an error.
-                    showMessageBox('Activity Logged Successfully!', 'success');
-
-                    // Optionally, clear the form after submission
-                    activityForm.reset();
-                    // Reset date and time to current after clearing
-                    const nowAfterReset = new Date();
-                    const yearAfterReset = nowAfterReset.getFullYear();
-                    const monthAfterReset = (nowAfterReset.getMonth() + 1).toString().padStart(2, '0');
-                    const dayAfterReset = nowAfterReset.getDate().toString().padStart(2, '0');
-                    document.getElementById('activityDate').value = `${yearAfterReset}-${monthAfterReset}-${dayAfterReset}`;
-
-                    let hoursAfterReset = nowAfterReset.getHours();
-                    const minutesAfterReset = nowAfterReset.getMinutes().toString().padStart(2, '0');
-                    document.getElementById('activityTime').value = `${hoursAfterReset.toString().padStart(2, '0')}:${minutesAfterReset}`;
-
-                    // Hide and clear formula ML input after reset
-                    toggleFormulaMlInput();
-
-                } catch (error) {
-                    console.error('Error submitting form:', error);
-                    showMessageBox('Failed to log activity. Please try again.', 'error');
-                }
-            });
-        });
-
-        /**
-         * Displays a customizable message box.
-         * @param {string} message - The message to display.
-         * @param {string} type - 'success' or 'error' to style the box.
-         */
-        function showMessageBox(message, type = 'success') {
-            const messageBox = document.getElementById('messageBox');
-            const messageText = document.getElementById('messageText');
-
-            messageText.textContent = message;
-
-            // Remove previous type classes
-            messageBox.classList.remove('success-message-box', 'error-message-box');
-
-            // Apply new type class and default class
-            if (type === 'error') {
-                messageBox.classList.add('error-message-box');
-            } else {
-                messageBox.classList.add('message-box'); // Re-add default success style
-            }
-
-            messageBox.style.display = 'block';
-            // Trigger reflow to ensure display change is rendered before opacity transition
-            messageBox.offsetHeight; 
-            messageBox.style.opacity = '1';
-        }
-
-        // Function to close the message box
-        function closeMessageBox() {
-            const messageBox = document.getElementById('messageBox');
-            messageBox.style.opacity = '0';
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 300); // Match this with CSS transition duration
-        }
-    </script>
-</body>
-</html>
-
+                <textarea id="activityDetails" name="activityDetails" rows="4" placeholder="e.g., Color and consistency, Wet or soiled, Wake-ups, etc." class="resiz
