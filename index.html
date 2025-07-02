@@ -54,7 +54,7 @@
           };
 
           const exportToCSV = () => {
-            const headers = ['Date/Time', 'Type', 'Amount (oz)', 'Timestamp'];
+            const headers = ['Date/Time', 'Type', 'Amount (mL)', 'Timestamp'];
             const csvData = entries.map(entry => [
               entry.displayTime,
               entry.type.charAt(0).toUpperCase() + entry.type.slice(1),
@@ -134,8 +134,8 @@
                       <div className="text-sm text-gray-400">Feedings</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">{stats.totalOunces.toFixed(1)}</div>
-                      <div className="text-sm text-gray-400">Total oz</div>
+                      <div className="text-2xl font-bold text-green-400">{stats.totalOunces.toFixed(0)}</div>
+                      <div className="text-sm text-gray-400">Total mL</div>
                     </div>
                   </div>
                 </div>
@@ -171,9 +171,9 @@
                           type="number"
                           value={feedingAmount}
                           onChange={(e) => setFeedingAmount(e.target.value)}
-                          placeholder="Ounces"
+                          placeholder="mL"
                           className="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-400 focus:outline-none"
-                          step="0.5"
+                          step="10"
                           min="0"
                         />
                         <button
@@ -221,7 +221,7 @@
                                 {entry.type}
                                 {entry.amount && (
                                   <span className="text-green-400 text-sm">
-                                    {entry.amount} oz
+                                    {entry.amount} mL
                                   </span>
                                 )}
                               </div>
