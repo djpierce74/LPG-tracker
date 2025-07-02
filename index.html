@@ -3,255 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lewis Tracker</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>Newborn Activity Tracker</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark background */
+            color: #e2e8f0; /* Light text for body */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .form-container {
+            background-color: #2d3748; /* Slightly lighter dark background for container */
+            padding: 2.5rem;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3); /* Darker shadow */
+            width: 100%;
+            max-width: 28rem; /* Max width for better readability on large screens */
+            box-sizing: border-box;
+        }
+        /* Adjusted: Main title color */
+        .form-container h2 {
+            color: #f8fafc; /* Lighter white-ish color for title */
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600; /* Semi-bold */
+            color: #e2e8f0; /* Lighter text for labels */
+        }
+        .input-group input[type="date"],
+        .input-group input[type="time"],
+        .input-group textarea,
+        .input-group select,
+        .input-group input[type="number"] { /* Added number input */
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #4a5568; /* Darker grey border */
+            border-radius: 0.75rem; /* Rounded input fields */
+            font-size: 1rem;
+            color: #f8fafc; /* Lighter text for inputs */
+            background-color: #2d3748; /* Same as container background */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            -webkit-appearance: none; /* Remove default browser styling for select */
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .input-group input[type="date"]:focus,
+        .input-group input[type="time"]:focus,
+        .input-group textarea:focus,
+        .input-group select:focus,
+        .input-group input[type="number"]:focus { /* Added number input */
+            outline: none;
+            border-color: #a78bfa; /* Lighter indigo focus color */
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3); /* Soft focus ring */
+        }
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 1rem; /* Space between radio buttons */
+            margin-bottom: 1.5rem;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            border: 1px solid #4a5568; /* Darker grey border */
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background-color: #2d3748; /* Match container */
+            color: #e2e8f0; /* Lighter text */
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 0.75rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #a0aec0; /* Lighter grey border for radio */
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .radio-group input[type="radio"]:checked {
+            border-color: #a78bfa; /* Lighter indigo border when checked */
+            background-color: #a78bfa; /* Lighter indigo fill when checked */
+        }
+        .radio-group input[type="radio"]:checked::before {
+            content: '';
+            display: block;
+            width: 0.6rem;
+            height: 0.6rem;
+            background: #2d3748; /* Dark background for inner circle */
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        /* Adjusted: Selected radio button label text color */
+        .radio-group input[type="radio"]:checked + span {
+            font-weight: 600;
+            color: #f8fafc; /* Even lighter text for selected label */
+        }
+        .radio-group label:hover {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #8b5cf6; /* Indigo button */
+            color: white;
+            font-weight: 700; /* Bold */
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            font-size: 1.125rem;
+            transition: background-color 0.3s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3); /* Soft shadow */
+        }
+        .submit-button:hover {
+            background-color: #7c3aed; /* Darker indigo on hover */
+            transform: translateY(-1px); /* Slight lift */
+        }
+        .submit-button:active {
+            transform: translateY(0); /* Press effect */
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #166534; /* Dark green background for success */
+            color: #f0fdf4; /* Lighter green text */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            border: 1px solid #4ade80; /* Light green border */
+            text-align: center;
+        }
+        .message-box button {
+            background-color: #4ade80;
+            color: #166534; /* Dark green text for button */
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .message-box button:hover {
+            background-color: #22c55e;
+            color: white; /* White text on hover */
+        }
+
+        .error-message-box {
+            background-color: #7f1d1d; /* Dark red background for error */
+            color: #fee2e2; /* Lighter red text */
+            border: 1px solid #f87171; /* Red border */
+        }
+        .error-message-box button {
+            background-color: #f87171;
+            color: #7f1d1d; /* Dark red text for button */
+        }
+        .error-message-box button:hover {
+            background-color: #ef4444;
+            color: white; /* White text on hover */
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+    <div class="form-container">
+        <h2 class="text-3xl font-extrabold text-center text-gray-800 mb-8">Newborn Activity Tracker</h2>
 
-        const BabyTracker = () => {
-          const [entries, setEntries] = useState([]);
-          const [feedingAmount, setFeedingAmount] = useState('');
+        <form id="activityForm" class="space-y-6">
+            <!-- Date and Time -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="input-group">
+                    <label for="activityDate">Date:</label>
+                    <input type="date" id="activityDate" name="activityDate" required>
+                </div>
+                <div class="input-group">
+                    <label for="activityTime">Time:</label>
+                    <input type="time" id="activityTime" name="activityTime" required>
+                </div>
+            </div>
 
-          // Load entries from localStorage on component mount
-          useEffect(() => {
-            const savedEntries = localStorage.getItem('babyTrackerEntries');
-            if (savedEntries) {
-              setEntries(JSON.parse(savedEntries));
-            }
-          }, []);
+            <!-- Activity Type -->
+            <div class="input-group">
+                <label class="mb-4">Activity Type:</label>
+                <div class="radio-group">
+                    <label for="typePoop">
+                        <input type="radio" id="typePoop" name="activityType" value="Poop" required>
+                        <span>💩 Poop</span>
+                    </label>
+                    <label for="typePee">
+                        <input type="radio" id="typePee" name="activityType" value="Pee">
+                        <span>💧 Pee</span>
+                    </label>
+                    <label for="typeFormula">
+                        <input type="radio" id="typeFormula" name="activityType" value="Formula">
+                        <span>🍼 Formula</span>
+                    </label>
+                    <label for="typeOther">
+                        <input type="radio" id="typeOther" name="activityType" value="Other">
+                        <span>✨ Other</span>
+                    </label>
+                </div>
+            </div>
 
-          // Save entries to localStorage whenever entries change
-          useEffect(() => {
-            localStorage.setItem('babyTrackerEntries', JSON.stringify(entries));
-          }, [entries]);
+            <!-- Formula (ml) Input - Conditionally visible -->
+            <div id="formulaMlGroup" class="input-group" style="display: none;">
+                <label for="formulaMl">Formula (ml):</label>
+                <input type="number" id="formulaMl" name="formulaMl" placeholder="Enter milliliters of formula">
+            </div>
 
-          const addEntry = (type, amount = null) => {
-            const newEntry = {
-              id: Date.now(),
-              type,
-              amount,
-              timestamp: new Date().toISOString(),
-              displayTime: new Date().toLocaleString()
-            };
-            setEntries(prev => [newEntry, ...prev]);
+            <!-- Details -->
+            <div class="input-group">
+                <label for="activityDetails">Details:</label>
+                <textarea id="activityDetails" name="activityDetails" rows="4" placeholder="e.g., Color and consistency, Wet or soiled, Wake-ups, etc." class="resize-y"></textarea>
+            </div>
+
+            <button type="submit" class="submit-button">Log Activity</button>
+        </form>
+    </div>
+
+    <!-- Message Box for Confirmation/Error -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText" class="text-lg font-semibold"></p>
+        <button onclick="closeMessageBox()">Close</button>
+    </div>
+
+    <script>
+        // REPLACE WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzySRBH7-SrbdkAlTr-4nAdSABXLG5tNcAdaGxyI1zQqskBqh3hSmZYwnRqdxnRXAhb/exec'; // *** IMPORTANT ***
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to current
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            document.getElementById('activityDate').value = `${year}-${month}-${day}`;
+
+            // Set default time to current in 12-hour format for display
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('activityTime').value = `${now.getHours().toString().padStart(2, '0')}:${minutes}`;
             
-            if (type === 'feeding') {
-              setFeedingAmount('');
+            // Get elements for conditional display
+            const activityTypeRadios = document.querySelectorAll('input[name="activityType"]');
+            const formulaMlGroup = document.getElementById('formulaMlGroup');
+            const formulaMlInput = document.getElementById('formulaMl');
+
+            // Function to toggle formula ML input visibility
+            function toggleFormulaMlInput() {
+                if (document.getElementById('typeFormula').checked) {
+                    formulaMlGroup.style.display = 'block';
+                    formulaMlInput.required = true; // Make it required when visible
+                } else {
+                    formulaMlGroup.style.display = 'none';
+                    formulaMlInput.value = ''; // Clear value when hidden
+                    formulaMlInput.required = false; // Not required when hidden
+                }
             }
-          };
 
-          const deleteEntry = (id) => {
-            setEntries(prev => prev.filter(entry => entry.id !== id));
-          };
-
-          const exportToCSV = () => {
-            const headers = ['Date/Time', 'Type', 'Amount (mL)', 'Timestamp'];
-            const csvData = entries.map(entry => [
-              entry.displayTime,
-              entry.type.charAt(0).toUpperCase() + entry.type.slice(1),
-              entry.amount || '',
-              entry.timestamp
-            ]);
-            
-            const csvContent = [headers, ...csvData]
-              .map(row => row.map(field => `"${field}"`).join(','))
-              .join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `lewis-tracker-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-          };
-
-          const getEntryIcon = (type) => {
-            switch(type) {
-              case 'poop': return '💩';
-              case 'pee': return '💧';
-              case 'feeding': return '🍼';
-              default: return '📝';
-            }
-          };
-
-          const getStats = () => {
-            const today = new Date().toDateString();
-            const todayEntries = entries.filter(entry => {
-              const entryDate = new Date(entry.timestamp).toDateString();
-              return today === entryDate;
+            // Add event listeners to activity type radios
+            activityTypeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleFormulaMlInput);
             });
 
-            return {
-              poops: todayEntries.filter(e => e.type === 'poop').length,
-              pees: todayEntries.filter(e => e.type === 'pee').length,
-              feedings: todayEntries.filter(e => e.type === 'feeding').length,
-              totalOunces: todayEntries
-                .filter(e => e.type === 'feeding' && e.amount)
-                .reduce((sum, e) => sum + parseFloat(e.amount), 0)
-            };
-          };
+            // Initial check in case "Formula" is pre-selected (though not by default here)
+            toggleFormulaMlInput();
 
-          const stats = getStats();
 
-          return (
-            <div className="min-h-screen bg-gray-900 text-white p-4">
-              <div className="max-w-md mx-auto">
-                {/* Header */}
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-3xl">👶</span>
-                    <h1 className="text-2xl font-bold">Lewis Tracker</h1>
-                  </div>
-                </div>
+            // Handle form submission
+            const activityForm = document.getElementById('activityForm');
+            activityForm.addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent default form submission
 
-                {/* Today's Stats */}
-                <div className="bg-gray-800 rounded-lg p-4 mb-6">
-                  <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <span>⏰</span>
-                    Today's Summary
-                  </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-amber-400">{stats.poops}</div>
-                      <div className="text-sm text-gray-400">Poops</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-400">{stats.pees}</div>
-                      <div className="text-sm text-gray-400">Pees</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">{stats.feedings}</div>
-                      <div className="text-sm text-gray-400">Feedings</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">{stats.totalOunces.toFixed(0)}</div>
-                      <div className="text-sm text-gray-400">Total mL</div>
-                    </div>
-                  </div>
-                </div>
+                // Get form data
+                const activityDate = document.getElementById('activityDate').value;
+                const activityTime = document.getElementById('activityTime').value; // This will be in 24-hour format
+                const activityType = document.querySelector('input[name="activityType"]:checked');
+                const activityDetails = document.getElementById('activityDetails').value;
+                const formulaMl = document.getElementById('formulaMl').value; // Get formula ML value
 
-                {/* Quick Log Buttons */}
-                <div className="mb-6">
-                  <h2 className="text-lg font-semibold mb-3">Quick Log</h2>
-                  <div className="space-y-3">
-                    {/* Poop and Pee buttons */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => addEntry('poop')}
-                        className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg"
-                      >
-                        💩 Poop
-                      </button>
-                      <button
-                        onClick={() => addEntry('pee')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 text-lg"
-                      >
-                        💧 Pee
-                      </button>
-                    </div>
-                    
-                    {/* Feeding section */}
-                    <div className="bg-gray-800 rounded-lg p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-green-400">🍼</span>
-                        <span className="font-semibold">Feeding</span>
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={feedingAmount}
-                          onChange={(e) => setFeedingAmount(e.target.value)}
-                          placeholder="mL"
-                          className="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-green-400 focus:outline-none"
-                          step="10"
-                          min="0"
-                        />
-                        <button
-                          onClick={() => feedingAmount && addEntry('feeding', feedingAmount)}
-                          disabled={!feedingAmount}
-                          className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded transition-colors"
-                        >
-                          Log
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                // Basic validation for activity type
+                if (!activityType) {
+                    showMessageBox('Please select an activity type.', 'error');
+                    return;
+                }
 
-                {/* Export Button */}
-                <div className="mb-6">
-                  <button
-                    onClick={exportToCSV}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span>⬇️</span>
-                    Export to CSV (Google Sheets)
-                  </button>
-                </div>
+                const formData = {
+                    date: activityDate,
+                    time: activityTime,
+                    type: activityType.value,
+                    // Include formulaMl only if it's relevant (i.e., Formula type is selected and value exists)
+                    mlFormula: activityType.value === 'Formula' ? formulaMl : '',
+                    details: activityDetails
+                };
 
-                {/* Recent Entries */}
-                <div>
-                  <h2 className="text-lg font-semibold mb-3">Recent Entries</h2>
-                  {entries.length === 0 ? (
-                    <div className="text-center text-gray-400 py-8">
-                      <div className="text-6xl mb-2 opacity-50">👶</div>
-                      <p>No entries yet. Start logging!</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
-                      {entries.slice(0, 20).map((entry) => (
-                        <div
-                          key={entry.id}
-                          className="bg-gray-800 rounded-lg p-3 flex items-center justify-between"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{getEntryIcon(entry.type)}</span>
-                            <div>
-                              <div className="font-semibold capitalize flex items-center gap-2">
-                                {entry.type}
-                                {entry.amount && (
-                                  <span className="text-green-400 text-sm">
-                                    {entry.amount} mL
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-sm text-gray-400">
-                                {entry.displayTime}
-                              </div>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => deleteEntry(entry.id)}
-                            className="text-red-400 hover:text-red-300 p-1 rounded transition-colors text-lg"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                // Send data to Google Apps Script
+                try {
+                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // Required for Google Apps Script web apps
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
 
-                {/* Footer */}
-                <div className="mt-8 text-center text-gray-500 text-sm">
-                  <p>Data saved locally • Export to import into Google Sheets</p>
-                </div>
-              </div>
-            </div>
-          );
-        };
+                    // Google Apps Script with `mode: 'no-cors'` always returns an 'opaque' response.
+                    // We can't directly read its content. A successful `fetch` means the request
+                    // was sent. You can confirm data in your Google Sheet.
+                    // Assuming success if fetch doesn't throw an error.
+                    showMessageBox('Activity Logged Successfully!', 'success');
 
-        ReactDOM.render(<BabyTracker />, document.getElementById('root'));
+                    // Optionally, clear the form after submission
+                    activityForm.reset();
+                    // Reset date and time to current after clearing
+                    const nowAfterReset = new Date();
+                    const yearAfterReset = nowAfterReset.getFullYear();
+                    const monthAfterReset = (nowAfterReset.getMonth() + 1).toString().padStart(2, '0');
+                    const dayAfterReset = nowAfterReset.getDate().toString().padStart(2, '0');
+                    document.getElementById('activityDate').value = `${yearAfterReset}-${monthAfterReset}-${dayAfterReset}`;
+
+                    let hoursAfterReset = nowAfterReset.getHours();
+                    const minutesAfterReset = nowAfterReset.getMinutes().toString().padStart(2, '0');
+                    document.getElementById('activityTime').value = `${hoursAfterReset.toString().padStart(2, '0')}:${minutesAfterReset}`;
+
+                    // Hide and clear formula ML input after reset
+                    toggleFormulaMlInput();
+
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    showMessageBox('Failed to log activity. Please try again.', 'error');
+                }
+            });
+        });
+
+        /**
+         * Displays a customizable message box.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success' or 'error' to style the box.
+         */
+        function showMessageBox(message, type = 'success') {
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+
+            messageText.textContent = message;
+
+            // Remove previous type classes
+            messageBox.classList.remove('success-message-box', 'error-message-box');
+
+            // Apply new type class and default class
+            if (type === 'error') {
+                messageBox.classList.add('error-message-box');
+            } else {
+                messageBox.classList.add('message-box'); // Re-add default success style
+            }
+
+            messageBox.style.display = 'block';
+            // Trigger reflow to ensure display change is rendered before opacity transition
+            messageBox.offsetHeight; 
+            messageBox.style.opacity = '1';
+        }
+
+        // Function to close the message box
+        function closeMessageBox() {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.style.opacity = '0';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 300); // Match this with CSS transition duration
+        }
     </script>
 </body>
 </html>
+
